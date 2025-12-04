@@ -1,0 +1,5 @@
+{
+  "name": "Sonic Lumina Controller",
+  "description": "A Web Bluetooth interface to control ESP32 LED and Buzzer systems.",
+  "requestFramePermissions": []
+}

@@ -34,10 +34,6 @@
 // ---- LEDC PWM Configuration ----
 #define PWM_FREQ       5000   // 5 kHz - good for LED strips
 #define PWM_RESOLUTION 8      // 8-bit = 0-255
-#define CH_RED         0
-#define CH_GREEN       1
-#define CH_BLUE        2
-#define CH_WHITE       3
 
 // ---- BLE UUIDs (must match constants.ts) ----
 #define SERVICE_UUID        "19b10000-e8f2-537e-4f6c-d104768a1214"
@@ -58,10 +54,10 @@ uint8_t currentW = 0;
 
 // ---- Apply RGBW to LED strip ----
 void applyColor(uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
-  ledcWrite(CH_RED, r);
-  ledcWrite(CH_GREEN, g);
-  ledcWrite(CH_BLUE, b);
-  ledcWrite(CH_WHITE, w);
+  ledcWrite(PIN_RED, r);
+  ledcWrite(PIN_GREEN, g);
+  ledcWrite(PIN_BLUE, b);
+  ledcWrite(PIN_WHITE, w);
 
   currentR = r;
   currentG = g;
@@ -110,16 +106,11 @@ void setup() {
   Serial.begin(115200);
   Serial.println("SonicLumina RGBW starting...");
 
-  // Setup LEDC PWM channels for RGBW
-  ledcAttachPin(PIN_RED, CH_RED);
-  ledcAttachPin(PIN_GREEN, CH_GREEN);
-  ledcAttachPin(PIN_BLUE, CH_BLUE);
-  ledcAttachPin(PIN_WHITE, CH_WHITE);
-
-  ledcSetup(CH_RED, PWM_FREQ, PWM_RESOLUTION);
-  ledcSetup(CH_GREEN, PWM_FREQ, PWM_RESOLUTION);
-  ledcSetup(CH_BLUE, PWM_FREQ, PWM_RESOLUTION);
-  ledcSetup(CH_WHITE, PWM_FREQ, PWM_RESOLUTION);
+  // Setup LEDC PWM channels for RGBW (ESP32 Arduino Core 3.x API)
+  ledcAttach(PIN_RED, PWM_FREQ, PWM_RESOLUTION);
+  ledcAttach(PIN_GREEN, PWM_FREQ, PWM_RESOLUTION);
+  ledcAttach(PIN_BLUE, PWM_FREQ, PWM_RESOLUTION);
+  ledcAttach(PIN_WHITE, PWM_FREQ, PWM_RESOLUTION);
 
   // Start with LEDs off
   applyColor(0, 0, 0, 0);

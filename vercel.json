@@ -1,6 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "cd sonic-lumina-controller && npm install && npm run build",
+  "installCommand": "cd sonic-lumina-controller && npm install",
+  "buildCommand": "cd sonic-lumina-controller && npm run build",
   "outputDirectory": "sonic-lumina-controller/dist",
   "routes": [
     {

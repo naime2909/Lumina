@@ -10,7 +10,6 @@
  *   GPIO 17 -> MOSFET Gate (Green channel)
  *   GPIO 18 -> MOSFET Gate (Blue channel)
  *   GPIO 19 -> MOSFET Gate (White channel)
- *   GPIO 25 -> Buzzer (+)
  *   LED strip 12V/24V -> External PSU V+
  *   MOSFET Drain -> LED strip R/G/B/W pads
  *   MOSFET Source -> PSU GND
@@ -18,7 +17,6 @@
  *
  * BLE Protocol:
  *   LED Characteristic: 4 bytes [R, G, B, W] each 0-255
- *   Notes Characteristic: array of uint16 frequencies
  */
 
 #include <BLEDevice.h>
@@ -32,7 +30,6 @@
 #define PIN_GREEN  17
 #define PIN_BLUE   18
 #define PIN_WHITE  19
-#define PIN_BUZZER 25
 
 // ---- LEDC PWM Configuration ----
 #define PWM_FREQ       5000   // 5 kHz - good for LED strips
@@ -45,7 +42,6 @@
 // ---- BLE UUIDs (must match constants.ts) ----
 #define SERVICE_UUID        "19b10000-e8f2-537e-4f6c-d104768a1214"
 #define CHAR_LED_UUID       "19b10001-e8f2-537e-4f6c-d104768a1214"
-#define CHAR_NOTES_UUID     "19b10002-e8f2-537e-4f6c-d104768a1214"
 
 // ---- State ----
 bool deviceConnected = false;
@@ -53,7 +49,6 @@ bool oldDeviceConnected = false;
 
 BLEServer* pServer = nullptr;
 BLECharacteristic* pLedChar = nullptr;
-BLECharacteristic* pNotesChar = nullptr;
 
 // Current RGBW values
 uint8_t currentR = 0;
@@ -74,18 +69,6 @@ void applyColor(uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
   currentW = w;
 
   Serial.printf("LED -> R:%d G:%d B:%d W:%d\n", r, g, b, w);
-}
-
-// ---- Play a tone on the buzzer ----
-void playTone(uint16_t frequency, uint16_t duration_ms) {
-  if (frequency == 0) {
-    noTone(PIN_BUZZER);
-    delay(duration_ms);
-    return;
-  }
-  tone(PIN_BUZZER, frequency, duration_ms);
-  delay(duration_ms);
-  noTone(PIN_BUZZER);
 }
 
 // ---- BLE Callbacks ----
@@ -122,24 +105,6 @@ class LedWriteCallback : public BLECharacteristicCallbacks {
   }
 };
 
-class NotesWriteCallback : public BLECharacteristicCallbacks {
-  void onWrite(BLECharacteristic* pChar) override {
-    String value = pChar->getValue();
-    int noteCount = value.length() / 2;  // 16-bit per note
-
-    if (noteCount == 0) return;
-
-    Serial.printf("Playing %d notes\n", noteCount);
-
-    for (int i = 0; i < noteCount; i++) {
-      uint16_t freq = (uint8_t)value[i * 2] | ((uint8_t)value[i * 2 + 1] << 8);
-      Serial.printf("  Note %d: %d Hz\n", i, freq);
-      playTone(freq, 300);  // 300ms per note
-      delay(50);            // Small gap between notes
-    }
-  }
-};
-
 // ---- Setup ----
 void setup() {
   Serial.begin(115200);
@@ -159,9 +124,6 @@ void setup() {
   // Start with LEDs off
   applyColor(0, 0, 0, 0);
 
-  // Buzzer pin
-  pinMode(PIN_BUZZER, OUTPUT);
-
   // ---- BLE Init ----
   BLEDevice::init("SonicLumina");
   pServer = BLEDevice::createServer();
@@ -176,14 +138,6 @@ void setup() {
   );
   pLedChar->setCallbacks(new LedWriteCallback());
   pLedChar->addDescriptor(new BLE2902());
-
-  // Notes Characteristic (frequency array write)
-  pNotesChar = pService->createCharacteristic(
-    CHAR_NOTES_UUID,
-    BLECharacteristic::PROPERTY_WRITE
-  );
-  pNotesChar->setCallbacks(new NotesWriteCallback());
-  pNotesChar->addDescriptor(new BLE2902());
 
   pService->start();
 

@@ -1,4 +1,4 @@
-import { BLE_SERVICE_UUID, BLE_CHAR_LED_UUID, BLE_CHAR_NOTES_UUID } from '../constants';
+import { BLE_SERVICE_UUID, BLE_CHAR_LED_UUID } from '../constants';
 
 // Define Web Bluetooth interfaces locally since @types/web-bluetooth might be missing in the environment
 interface BluetoothDevice extends EventTarget {
@@ -34,7 +34,6 @@ class BLEService {
   private device: BluetoothDevice | null = null;
   private server: BluetoothRemoteGATTServer | null = null;
   private ledChar: BluetoothRemoteGATTCharacteristic | null = null;
-  private notesChar: BluetoothRemoteGATTCharacteristic | null = null;
 
   isSupported(): boolean {
     return 'bluetooth' in (navigator as any);
@@ -69,7 +68,6 @@ class BLEService {
       // 4. Get Characteristics
       console.log('Getting Characteristics...');
       this.ledChar = await service.getCharacteristic(BLE_CHAR_LED_UUID);
-      this.notesChar = await service.getCharacteristic(BLE_CHAR_NOTES_UUID);
 
       console.log('Connected!');
     } catch (error) {
@@ -90,7 +88,6 @@ class BLEService {
     this.device = null;
     this.server = null;
     this.ledChar = null;
-    this.notesChar = null;
   };
 
   /**
@@ -109,27 +106,6 @@ class BLEService {
     }
   }
 
-  /**
-   * Sends Array of Frequencies (Integers).
-   * ESP32 expects an array of 16-bit integers (since frequencies go up to ~4000Hz).
-   */
-  async sendNotes(frequencies: number[]): Promise<void> {
-    if (!this.notesChar) return;
-    try {
-      // Create a buffer for 16-bit integers (2 bytes per note)
-      const buffer = new ArrayBuffer(frequencies.length * 2);
-      const view = new Uint16Array(buffer);
-      
-      frequencies.forEach((freq, index) => {
-        view[index] = freq;
-      });
-
-      await this.notesChar.writeValue(buffer);
-    } catch (err) {
-      console.error('Error writing notes:', err);
-      throw err;
-    }
-  }
 }
 
 export const bleService = new BLEService();

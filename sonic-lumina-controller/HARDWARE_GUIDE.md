@@ -6,11 +6,10 @@
 2. [Schema general](#2-schema-general)
 3. [Alimentation](#3-alimentation)
 4. [Branchement des MOSFETs (ruban RGBW)](#4-branchement-des-mosfets-ruban-rgbw)
-5. [Branchement du buzzer (sequenceur)](#5-branchement-du-buzzer-sequenceur)
-6. [Recapitulatif des GPIOs](#6-recapitulatif-des-gpios)
-7. [Code Arduino / ESP32](#7-code-arduino--esp32)
-8. [Connexion depuis l'application](#8-connexion-depuis-lapplication)
-9. [Depannage](#9-depannage)
+5. [Recapitulatif des GPIOs](#5-recapitulatif-des-gpios)
+6. [Code Arduino / ESP32](#6-code-arduino--esp32)
+7. [Connexion depuis l'application](#7-connexion-depuis-lapplication)
+8. [Depannage](#8-depannage)
 
 ---
 
@@ -22,7 +21,6 @@
 | Ruban LED RGBW 12V | SMD 5050 RGBW (non-addressable, 4 canaux + commun) | 1 |
 | MOSFET N-Channel logic-level | IRLZ44N ou IRL540N (Vgs < 3.3V) | 4 |
 | Alimentation 12V | 12V DC, amperage selon longueur du ruban (ex: 5A pour 5m) | 1 |
-| Buzzer piezo passif | Buzzer passif 3.3V/5V | 1 |
 | Resistances | 100 ohms (grille MOSFET) | 4 |
 | Resistances pull-down | 10k ohms (grille MOSFET vers GND) | 4 |
 | Fils Dupont / breadboard | - | selon besoin |
@@ -54,9 +52,6 @@
          G    G    G    G         <- Gate (via R 100 ohm depuis ESP32)
          |    |    |    |
   GPIO16 GPIO17 GPIO18 GPIO19    <- PWM ESP32
-
-
-    ESP32 GPIO25 ----> [Buzzer passif] ----> GND
 ```
 
 ---
@@ -138,22 +133,7 @@ ESP32 GPIO16 ──── [R 100Ω] ──── Gate (IRLZ44N)
 
 ---
 
-## 5. Branchement du buzzer (sequenceur)
-
-Le sequenceur de notes envoie des frequences a l'ESP32 qui les joue via un **buzzer piezo passif**.
-
-```
-ESP32 GPIO25 ──── (+) Buzzer passif ──── GND
-```
-
-- Utiliser un **buzzer passif** (pas actif). Un buzzer actif ne permet pas de controler la frequence.
-- Le buzzer est configure avec `pinMode(PIN_BUZZER, OUTPUT)` et pilote avec `tone()` / `noTone()`.
-- Chaque note dure **300ms** avec une pause de **50ms** entre chaque note.
-- Pas besoin de MOSFET ici : le buzzer consomme tres peu de courant (~20mA).
-
----
-
-## 6. Recapitulatif des GPIOs
+## 5. Recapitulatif des GPIOs
 
 | GPIO | Fonction | Peripherique |
 |------|----------|-------------|
@@ -161,34 +141,25 @@ ESP32 GPIO25 ──── (+) Buzzer passif ──── GND
 | 17 | PWM canal Vert | MOSFET #2 -> Ruban G |
 | 18 | PWM canal Bleu | MOSFET #3 -> Ruban B |
 | 19 | PWM canal Blanc | MOSFET #4 -> Ruban W |
-| 25 | Tone (buzzer) | Buzzer passif |
 
 > **Note** : Ces GPIOs sont des suggestions. Tu peux utiliser n'importe quel GPIO capable de PWM sur l'ESP32 (eviter GPIO 0, 2, 5, 12, 15 qui ont des fonctions speciales au boot). Adapte les defines dans le sketch Arduino en consequence.
 
 ---
 
-## 7. Code Arduino / ESP32
+## 6. Code Arduino / ESP32
 
 Le sketch complet se trouve dans le fichier **`esp32_rgbw_ble.ino`** a la racine du projet. Voici ce qu'il fait :
 
 ### Architecture du sketch
 
-- **BLE** : Service UUID `19b10000-e8f2-537e-4f6c-d104768a1214` avec 2 caracteristiques :
+- **BLE** : Service UUID `19b10000-e8f2-537e-4f6c-d104768a1214` avec 1 caracteristique :
   - **LED** (`19b10001-...`) : `PROPERTY_WRITE | PROPERTY_READ` + descriptor BLE2902
-  - **Notes** (`19b10002-...`) : `PROPERTY_WRITE` + descriptor BLE2902
 
 ### Protocole LED (LedWriteCallback)
 
 L'app envoie **4 octets** `[R, G, B, W]` (0-255 chacun). Le sketch les applique directement aux canaux PWM via `applyColor()` -> `ledcWrite()`.
 
 Le sketch supporte aussi un mode **retrocompatible 3 octets** `[R, G, B]` (le canal W est mis a 0).
-
-### Protocole Notes (NotesWriteCallback)
-
-L'app envoie un tableau de **uint16 little-endian** (2 octets par frequence). Le sketch les decode et joue chaque note avec `tone()` :
-- **300ms** par note
-- **50ms** de silence entre chaque note
-- `noTone()` pour couper le son
 
 ### Gestion de la reconnexion
 
@@ -210,8 +181,6 @@ ledcSetup(CH_GREEN, 5000, 8);
 ledcSetup(CH_BLUE,  5000, 8);
 ledcSetup(CH_WHITE, 5000, 8);
 
-// Buzzer : pas de LEDC, utilise tone()/noTone()
-pinMode(PIN_BUZZER, OUTPUT);
 ```
 
 ### Installation dans Arduino IDE
@@ -224,7 +193,7 @@ pinMode(PIN_BUZZER, OUTPUT);
 
 ---
 
-## 8. Connexion depuis l'application
+## 7. Connexion depuis l'application
 
 ### Prerequis
 
@@ -247,15 +216,9 @@ pinMode(PIN_BUZZER, OUTPUT);
 - Cliquer sur un **preset** (Red, Ocean, Sunset...) pour une couleur predefinie.
 - Les valeurs sont envoyees a l'ESP32 en temps reel (debounce 30ms).
 
-### Controler le sequenceur
-
-- Selectionner les notes (C3 a C5) pour chacun des 8 slots.
-- **PREVIEW** : ecouter la sequence dans le navigateur (Web Audio).
-- **UPLOAD TO DEVICE** : envoyer les frequences a l'ESP32, qui les joue sur le buzzer.
-
 ---
 
-## 9. Depannage
+## 8. Depannage
 
 | Probleme | Solution |
 |----------|---------|
@@ -264,5 +227,4 @@ pinMode(PIN_BUZZER, OUTPUT);
 | LEDs ne s'allument pas | Verifier la GND commune entre l'alim 12V et l'ESP32. Verifier que les MOSFETs sont bien des logic-level (IRLZ44N). |
 | LEDs faibles / scintillent | Alimentation 12V sous-dimensionnee. Augmenter l'amperage. |
 | Une seule couleur marche | Verifier le branchement du MOSFET du canal concerne (Gate, Drain, Source). |
-| Buzzer ne joue rien | Verifier que c'est un buzzer **passif** (pas actif). Verifier le GPIO 25. |
 | Deconnexion aleatoire | L'ESP32 et le telephone doivent etre a moins de ~10m. Eloigner des sources d'interference WiFi. |

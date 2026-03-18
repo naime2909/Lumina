@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { ConnectionStatus } from './types';
 import { bleService } from './services/bleService';
 import LedController from './components/LedController';
-import NoteSequencer from './components/NoteSequencer';
 import { Bluetooth, BluetoothConnected, BluetoothOff, Info } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -131,7 +130,6 @@ const App: React.FC = () => {
         
         <div className={status !== ConnectionStatus.CONNECTED ? "opacity-90" : ""}>
              <LedController isConnected={status === ConnectionStatus.CONNECTED} />
-             <NoteSequencer isConnected={status === ConnectionStatus.CONNECTED} />
         </div>
 
       </div>

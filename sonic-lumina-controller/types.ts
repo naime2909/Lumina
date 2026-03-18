@@ -1,9 +1,3 @@
-export interface Note {
-  id: number;
-  frequency: number;
-  name: string;
-}
-
 export enum ConnectionStatus {
   DISCONNECTED = 'DISCONNECTED',
   CONNECTING = 'CONNECTING',
@@ -16,12 +10,6 @@ export interface BleDeviceConfig {
   status: ConnectionStatus;
   error: string | null;
 }
-
-export const FREQUENCY_MAP: Record<string, number> = {
-  'C3': 131, 'D3': 147, 'E3': 165, 'F3': 175, 'G3': 196, 'A3': 220, 'B3': 247,
-  'C4': 262, 'D4': 294, 'E4': 330, 'F4': 349, 'G4': 392, 'A4': 440, 'B4': 494,
-  'C5': 523, 'D5': 587, 'E5': 659
-};
 
 export interface ColorRGBW {
   name: string;

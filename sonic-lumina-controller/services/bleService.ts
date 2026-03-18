@@ -94,15 +94,14 @@ class BLEService {
   };
 
   /**
-   * Sends RGB values.
-   * Format: Uint8Array [Red(0/1), Green(0/1), Blue(0/1)]
-   * Note: The C++ code uses 0 or 1 for digital write. 
-   * If you want PWM later, you can send 0-255.
+   * Sends RGBW values for non-addressable LED strip.
+   * Format: Uint8Array [Red(0-255), Green(0-255), Blue(0-255), White(0-255)]
+   * ESP32 uses PWM (analogWrite/LEDC) to drive each channel.
    */
-  async sendColor(r: number, g: number, b: number): Promise<void> {
+  async sendColor(r: number, g: number, b: number, w: number = 0): Promise<void> {
     if (!this.ledChar) return;
     try {
-      const data = new Uint8Array([r, g, b]);
+      const data = new Uint8Array([r, g, b, w]);
       await this.ledChar.writeValue(data);
     } catch (err) {
       console.error('Error writing color:', err);

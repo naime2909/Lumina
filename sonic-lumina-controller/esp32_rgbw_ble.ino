@@ -26,10 +26,10 @@
 
 // ---- Pin Configuration ----
 // Change these to match your wiring
-#define PIN_RED    16
-#define PIN_GREEN  17
-#define PIN_BLUE   18
-#define PIN_WHITE  19
+#define PIN_RED    5
+#define PIN_GREEN  18
+#define PIN_BLUE   19
+#define PIN_WHITE  21
 
 // ---- LEDC PWM Configuration ----
 #define PWM_FREQ       5000   // 5 kHz - good for LED strips

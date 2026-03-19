@@ -6,10 +6,10 @@
  * over BLE from the SonicLumina web app.
  *
  * Wiring:
- *   GPIO 16 -> MOSFET Gate (Red channel)
- *   GPIO 17 -> MOSFET Gate (Green channel)
- *   GPIO 18 -> MOSFET Gate (Blue channel)
- *   GPIO 19 -> MOSFET Gate (White channel)
+ *   GPIO 5  -> MOSFET Gate (Red channel)
+ *   GPIO 18 -> MOSFET Gate (Green channel)
+ *   GPIO 19 -> MOSFET Gate (Blue channel)
+ *   GPIO 21 -> MOSFET Gate (White channel)
  *   LED strip 12V/24V -> External PSU V+
  *   MOSFET Drain -> LED strip R/G/B/W pads
  *   MOSFET Source -> PSU GND
@@ -105,6 +105,12 @@ class LedWriteCallback : public BLECharacteristicCallbacks {
 void setup() {
   Serial.begin(115200);
   Serial.println("SonicLumina RGBW starting...");
+
+  // Force GPIOs LOW before LEDC attach to prevent MOSFETs turning on at boot
+  pinMode(PIN_RED,   OUTPUT); digitalWrite(PIN_RED,   LOW);
+  pinMode(PIN_GREEN, OUTPUT); digitalWrite(PIN_GREEN, LOW);
+  pinMode(PIN_BLUE,  OUTPUT); digitalWrite(PIN_BLUE,  LOW);
+  pinMode(PIN_WHITE, OUTPUT); digitalWrite(PIN_WHITE, LOW);
 
   // Setup LEDC PWM channels for RGBW (ESP32 Arduino Core 3.x API)
   ledcAttach(PIN_RED, PWM_FREQ, PWM_RESOLUTION);

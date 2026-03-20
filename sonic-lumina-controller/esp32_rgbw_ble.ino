@@ -1,39 +1,49 @@
 /*
- * SonicLumina - ESP32 BLE RGBW LED Strip + Buzzer Controller
+ * SonicLumina - ESP32 BLE RGBW LED Strip Controller
  *
- * Controls a non-addressable RGBW LED strip via 4 MOSFETs/transistors
- * driven by ESP32 LEDC PWM channels. Receives RGBW values (0-255)
- * over BLE from the SonicLumina web app.
+ * Controls a non-addressable RGBW LED strip via PCA9685 PWM driver
+ * and 4 MOSFET modules. Receives RGBW values (0-255) over BLE
+ * from the SonicLumina web app.
  *
  * Wiring:
- *   GPIO 5  -> MOSFET Gate (Red channel)
- *   GPIO 18 -> MOSFET Gate (Green channel)
- *   GPIO 19 -> MOSFET Gate (Blue channel)
- *   GPIO 21 -> MOSFET Gate (White channel)
- *   LED strip 12V/24V -> External PSU V+
- *   MOSFET Drain -> LED strip R/G/B/W pads
- *   MOSFET Source -> PSU GND
- *   ESP32 GND -> PSU GND (common ground)
+ *   ESP32 D21 (SDA) -> PCA9685 SDA
+ *   ESP32 D22 (SCL) -> PCA9685 SCL
+ *   ESP32 VIN (5V)  -> PCA9685 VCC
+ *   ESP32 GND       -> PCA9685 GND
+ *
+ *   PCA9685 CH0 -> PWM1 module MOSFET -> Ruban Rouge
+ *   PCA9685 CH1 -> PWM2 module MOSFET -> Ruban Vert
+ *   PCA9685 CH2 -> PWM3 module MOSFET -> Ruban Bleu
+ *   PCA9685 CH3 -> PWM4 module MOSFET -> Ruban Blanc
+ *
+ *   Alim 12V (+) -> DC+ module MOSFET + fil +12V ruban
+ *   Alim 12V (-) -> DC- module MOSFET + GND ESP32
  *
  * BLE Protocol:
  *   LED Characteristic: 4 bytes [R, G, B, W] each 0-255
  */
 
+#include <Wire.h>
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
 #include <BLE2902.h>
 
-// ---- Pin Configuration ----
-// Change these to match your wiring
-#define PIN_RED    5
-#define PIN_GREEN  18
-#define PIN_BLUE   19
-#define PIN_WHITE  21
+// ---- PCA9685 Configuration ----
+#define PCA9685_ADDR  0x40
+#define PCA9685_MODE1 0x00
+#define PCA9685_PRESCALE 0xFE
+#define PCA9685_LED0_ON_L 0x06
 
-// ---- LEDC PWM Configuration ----
-#define PWM_FREQ       5000   // 5 kHz - good for LED strips
-#define PWM_RESOLUTION 8      // 8-bit = 0-255
+// PCA9685 channels for RGBW
+#define CH_RED    0
+#define CH_GREEN  1
+#define CH_BLUE   2
+#define CH_WHITE  3
+
+// I2C pins
+#define SDA_PIN 21
+#define SCL_PIN 22
 
 // ---- BLE UUIDs (must match constants.ts) ----
 #define SERVICE_UUID        "19b10000-e8f2-537e-4f6c-d104768a1214"
@@ -46,18 +56,72 @@ bool oldDeviceConnected = false;
 BLEServer* pServer = nullptr;
 BLECharacteristic* pLedChar = nullptr;
 
-// Current RGBW values
 uint8_t currentR = 0;
 uint8_t currentG = 0;
 uint8_t currentB = 0;
 uint8_t currentW = 0;
 
-// ---- Apply RGBW to LED strip ----
+// ---- PCA9685 Functions ----
+void pca9685Write(uint8_t reg, uint8_t value) {
+  Wire.beginTransmission(PCA9685_ADDR);
+  Wire.write(reg);
+  Wire.write(value);
+  Wire.endTransmission();
+}
+
+void pca9685Init() {
+  Wire.begin(SDA_PIN, SCL_PIN);
+
+  // Reset PCA9685
+  pca9685Write(PCA9685_MODE1, 0x00);
+  delay(5);
+
+  // Set PWM frequency to ~1kHz (good for LED strips)
+  // prescale = round(25MHz / (4096 * freq)) - 1
+  // For 1kHz: round(25000000 / (4096 * 1000)) - 1 = 5
+  pca9685Write(PCA9685_MODE1, 0x10);  // Sleep mode to set prescale
+  pca9685Write(PCA9685_PRESCALE, 5);  // ~1kHz
+  pca9685Write(PCA9685_MODE1, 0x00);  // Wake up
+  delay(5);
+  pca9685Write(PCA9685_MODE1, 0xA0);  // Auto-increment + restart
+}
+
+void pca9685SetPWM(uint8_t channel, uint16_t value) {
+  // value: 0-4095 (12-bit PWM)
+  uint8_t reg = PCA9685_LED0_ON_L + 4 * channel;
+
+  Wire.beginTransmission(PCA9685_ADDR);
+  Wire.write(reg);
+
+  if (value == 0) {
+    // Full OFF
+    Wire.write(0x00);  // ON_L
+    Wire.write(0x00);  // ON_H
+    Wire.write(0x00);  // OFF_L
+    Wire.write(0x10);  // OFF_H (bit 4 = full off)
+  } else if (value >= 4095) {
+    // Full ON
+    Wire.write(0x00);  // ON_L
+    Wire.write(0x10);  // ON_H (bit 4 = full on)
+    Wire.write(0x00);  // OFF_L
+    Wire.write(0x00);  // OFF_H
+  } else {
+    Wire.write(0x00);           // ON_L
+    Wire.write(0x00);           // ON_H
+    Wire.write(value & 0xFF);   // OFF_L
+    Wire.write(value >> 8);     // OFF_H
+  }
+
+  Wire.endTransmission();
+}
+
+// ---- Apply RGBW to LED strip via PCA9685 ----
 void applyColor(uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
-  ledcWrite(PIN_RED, r);
-  ledcWrite(PIN_GREEN, g);
-  ledcWrite(PIN_BLUE, b);
-  ledcWrite(PIN_WHITE, w);
+  // Map 0-255 to 0-4095 (12-bit PCA9685)
+  pca9685SetPWM(CH_RED,   (uint16_t)r * 16);
+  pca9685SetPWM(CH_GREEN, (uint16_t)g * 16);
+  pca9685SetPWM(CH_BLUE,  (uint16_t)b * 16);
+  pca9685SetPWM(CH_WHITE, (uint16_t)w * 16);
 
   currentR = r;
   currentG = g;
@@ -85,14 +149,12 @@ class LedWriteCallback : public BLECharacteristicCallbacks {
     String value = pChar->getValue();
 
     if (value.length() >= 4) {
-      // New RGBW protocol: 4 bytes, each 0-255
       uint8_t r = (uint8_t)value[0];
       uint8_t g = (uint8_t)value[1];
       uint8_t b = (uint8_t)value[2];
       uint8_t w = (uint8_t)value[3];
       applyColor(r, g, b, w);
     } else if (value.length() == 3) {
-      // Backwards compatible: old RGB protocol (3 bytes)
       uint8_t r = (uint8_t)value[0];
       uint8_t g = (uint8_t)value[1];
       uint8_t b = (uint8_t)value[2];
@@ -106,20 +168,10 @@ void setup() {
   Serial.begin(115200);
   Serial.println("SonicLumina RGBW starting...");
 
-  // Force GPIOs LOW before LEDC attach to prevent MOSFETs turning on at boot
-  pinMode(PIN_RED,   OUTPUT); digitalWrite(PIN_RED,   LOW);
-  pinMode(PIN_GREEN, OUTPUT); digitalWrite(PIN_GREEN, LOW);
-  pinMode(PIN_BLUE,  OUTPUT); digitalWrite(PIN_BLUE,  LOW);
-  pinMode(PIN_WHITE, OUTPUT); digitalWrite(PIN_WHITE, LOW);
-
-  // Setup LEDC PWM channels for RGBW (ESP32 Arduino Core 3.x API)
-  ledcAttach(PIN_RED, PWM_FREQ, PWM_RESOLUTION);
-  ledcAttach(PIN_GREEN, PWM_FREQ, PWM_RESOLUTION);
-  ledcAttach(PIN_BLUE, PWM_FREQ, PWM_RESOLUTION);
-  ledcAttach(PIN_WHITE, PWM_FREQ, PWM_RESOLUTION);
-
-  // Start with LEDs off
+  // Init PCA9685
+  pca9685Init();
   applyColor(0, 0, 0, 0);
+  Serial.println("PCA9685 initialized");
 
   // ---- BLE Init ----
   BLEDevice::init("SonicLumina");
@@ -128,7 +180,6 @@ void setup() {
 
   BLEService* pService = pServer->createService(SERVICE_UUID);
 
-  // LED Characteristic (RGBW write)
   pLedChar = pService->createCharacteristic(
     CHAR_LED_UUID,
     BLECharacteristic::PROPERTY_WRITE | BLECharacteristic::PROPERTY_READ
@@ -138,7 +189,6 @@ void setup() {
 
   pService->start();
 
-  // Start advertising
   BLEAdvertising* pAdvertising = BLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(SERVICE_UUID);
   pAdvertising->setScanResponse(true);
@@ -151,7 +201,6 @@ void setup() {
 
 // ---- Loop ----
 void loop() {
-  // Handle reconnection: restart advertising when client disconnects
   if (!deviceConnected && oldDeviceConnected) {
     delay(500);
     BLEDevice::startAdvertising();

@@ -1,0 +1,344 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" font-family="'Segoe UI', Arial, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6"/>
+    </marker>
+    <marker id="arrow-white" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#a1a1aa"/>
+    </marker>
+    <marker id="arrow-yellow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#eab308"/>
+    </marker>
+    <marker id="arrow-cyan" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#06b6d4"/>
+    </marker>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="1600" fill="url(#bg)"/>
+
+  <!-- Title -->
+  <text x="600" y="55" text-anchor="middle" fill="#e2e8f0" font-size="28" font-weight="bold" letter-spacing="3">SONIC LUMINA v2</text>
+  <text x="600" y="82" text-anchor="middle" fill="#94a3b8" font-size="16" letter-spacing="1">SCHEMA DE CABLAGE COMPLET</text>
+  <line x1="350" y1="95" x2="850" y2="95" stroke="#334155" stroke-width="1"/>
+
+  <!-- ==================== ALIM 12V ==================== -->
+  <rect x="460" y="120" width="280" height="90" rx="8" fill="#1e293b" stroke="#eab308" stroke-width="2" filter="url(#shadow)"/>
+  <text x="600" y="152" text-anchor="middle" fill="#eab308" font-size="15" font-weight="bold">ALIMENTATION 12V DC</text>
+  <text x="600" y="175" text-anchor="middle" fill="#94a3b8" font-size="12">5A min pour 3m de ruban</text>
+  <text x="530" y="198" text-anchor="middle" fill="#ef4444" font-size="13" font-weight="bold">+12V</text>
+  <text x="670" y="198" text-anchor="middle" fill="#94a3b8" font-size="13" font-weight="bold">GND</text>
+
+  <!-- Fil +12V descend vers DC+ et ruban -->
+  <line x1="530" y1="210" x2="530" y2="340" stroke="#ef4444" stroke-width="2.5"/>
+  <!-- Fil GND descend -->
+  <line x1="670" y1="210" x2="670" y2="270" stroke="#94a3b8" stroke-width="2.5"/>
+
+  <!-- ==================== GND COMMUNE (barre) ==================== -->
+  <rect x="100" y="270" width="1000" height="40" rx="6" fill="#1e1e2e" stroke="#64748b" stroke-width="2" stroke-dasharray="6,3"/>
+  <text x="600" y="295" text-anchor="middle" fill="#f8fafc" font-size="14" font-weight="bold" letter-spacing="2">GND COMMUNE</text>
+
+  <!-- Labels GND -->
+  <text x="175" y="330" text-anchor="middle" fill="#64748b" font-size="9">ESP32</text>
+  <text x="320" y="330" text-anchor="middle" fill="#64748b" font-size="9">PCA9685</text>
+  <text x="920" y="330" text-anchor="middle" fill="#64748b" font-size="9">DC-</text>
+
+  <!-- Ticks GND -->
+  <line x1="175" y1="310" x2="175" y2="322" stroke="#64748b" stroke-width="1.5"/>
+  <line x1="320" y1="310" x2="320" y2="322" stroke="#64748b" stroke-width="1.5"/>
+  <line x1="920" y1="310" x2="920" y2="322" stroke="#64748b" stroke-width="1.5"/>
+
+  <!-- Alim GND -> barre -->
+  <line x1="670" y1="270" x2="670" y2="270" stroke="#94a3b8" stroke-width="2"/>
+  <circle cx="670" cy="270" r="3" fill="#94a3b8"/>
+
+  <!-- ==================== MODULE MOSFET ==================== -->
+  <rect x="350" y="370" width="500" height="280" rx="10" fill="#1e293b" stroke="#8b5cf6" stroke-width="2" filter="url(#shadow)"/>
+  <text x="600" y="400" text-anchor="middle" fill="#8b5cf6" font-size="16" font-weight="bold">MODULE 4 MOSFETs</text>
+  <text x="600" y="420" text-anchor="middle" fill="#64748b" font-size="12">Low-side switch</text>
+
+  <!-- DC+ / DC- -->
+  <rect x="380" y="440" width="120" height="50" rx="5" fill="#2d2040" stroke="#8b5cf6" stroke-width="1"/>
+  <text x="440" y="460" text-anchor="middle" fill="#eab308" font-size="12" font-weight="bold">DC+</text>
+  <text x="440" y="480" text-anchor="middle" fill="#64748b" font-size="12" font-weight="bold">DC-</text>
+
+  <!-- Fil +12V -> DC+ -->
+  <line x1="530" y1="340" x2="530" y2="355" stroke="#ef4444" stroke-width="2.5"/>
+  <line x1="530" y1="355" x2="440" y2="355" stroke="#ef4444" stroke-width="2.5"/>
+  <line x1="440" y1="355" x2="440" y2="440" stroke="#ef4444" stroke-width="2.5" marker-end="url(#arrow-red)"/>
+
+  <!-- DC- -> GND barre -->
+  <line x1="440" y1="490" x2="440" y2="510" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="440" y1="510" x2="920" y2="510" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="920" y1="510" x2="920" y2="310" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+
+  <!-- Entrees PWM + GND (cote entree) -->
+  <text x="600" y="460" text-anchor="middle" fill="#c4b5fd" font-size="11" font-weight="bold">ENTREES (depuis PCA9685)</text>
+
+  <!-- PWM1/GND1 -->
+  <rect x="540" y="472" width="55" height="22" rx="3" fill="#3b1c1c" stroke="#ef4444" stroke-width="1"/>
+  <text x="567" y="487" text-anchor="middle" fill="#ef4444" font-size="10" font-weight="bold">PWM1</text>
+  <rect x="600" y="472" width="50" height="22" rx="3" fill="#1e2a1e" stroke="#64748b" stroke-width="1"/>
+  <text x="625" y="487" text-anchor="middle" fill="#64748b" font-size="10">GND1</text>
+
+  <!-- PWM2/GND2 -->
+  <rect x="540" y="500" width="55" height="22" rx="3" fill="#1c2e1c" stroke="#22c55e" stroke-width="1"/>
+  <text x="567" y="515" text-anchor="middle" fill="#22c55e" font-size="10" font-weight="bold">PWM2</text>
+  <rect x="600" y="500" width="50" height="22" rx="3" fill="#1e2a1e" stroke="#64748b" stroke-width="1"/>
+  <text x="625" y="515" text-anchor="middle" fill="#64748b" font-size="10">GND2</text>
+
+  <!-- PWM3/GND3 -->
+  <rect x="540" y="528" width="55" height="22" rx="3" fill="#1c1c3b" stroke="#3b82f6" stroke-width="1"/>
+  <text x="567" y="543" text-anchor="middle" fill="#3b82f6" font-size="10" font-weight="bold">PWM3</text>
+  <rect x="600" y="528" width="50" height="22" rx="3" fill="#1e2a1e" stroke="#64748b" stroke-width="1"/>
+  <text x="625" y="543" text-anchor="middle" fill="#64748b" font-size="10">GND3</text>
+
+  <!-- PWM4/GND4 -->
+  <rect x="540" y="556" width="55" height="22" rx="3" fill="#2a2a2a" stroke="#a1a1aa" stroke-width="1"/>
+  <text x="567" y="571" text-anchor="middle" fill="#e4e4e7" font-size="10" font-weight="bold">PWM4</text>
+  <rect x="600" y="556" width="50" height="22" rx="3" fill="#1e2a1e" stroke="#64748b" stroke-width="1"/>
+  <text x="625" y="571" text-anchor="middle" fill="#64748b" font-size="10">GND4</text>
+
+  <!-- GND1-4 : les fils GND viennent maintenant du côté droit (PCA9685 GND ports) -->
+
+  <!-- Sorties OUT- -->
+  <text x="600" y="606" text-anchor="middle" fill="#c4b5fd" font-size="11" font-weight="bold">SORTIES (vers ruban)</text>
+
+  <rect x="430" y="615" width="60" height="22" rx="3" fill="#3b1c1c" stroke="#ef4444" stroke-width="1"/>
+  <text x="460" y="630" text-anchor="middle" fill="#ef4444" font-size="10" font-weight="bold">OUT-1</text>
+
+  <rect x="510" y="615" width="60" height="22" rx="3" fill="#1c2e1c" stroke="#22c55e" stroke-width="1"/>
+  <text x="540" y="630" text-anchor="middle" fill="#22c55e" font-size="10" font-weight="bold">OUT-2</text>
+
+  <rect x="590" y="615" width="60" height="22" rx="3" fill="#1c1c3b" stroke="#3b82f6" stroke-width="1"/>
+  <text x="620" y="630" text-anchor="middle" fill="#3b82f6" font-size="10" font-weight="bold">OUT-3</text>
+
+  <rect x="670" y="615" width="60" height="22" rx="3" fill="#2a2a2a" stroke="#a1a1aa" stroke-width="1"/>
+  <text x="700" y="630" text-anchor="middle" fill="#e4e4e7" font-size="10" font-weight="bold">OUT-4</text>
+
+  <!-- ==================== RUBAN LED ==================== -->
+  <rect x="300" y="710" width="600" height="110" rx="10" fill="#1e293b" stroke="#f472b6" stroke-width="2" filter="url(#shadow)"/>
+
+  <!-- Bande de couleur dégradée -->
+  <rect x="320" y="715" width="560" height="6" rx="3" fill="#ef4444" opacity="0.6"/>
+  <rect x="320" y="715" width="140" height="6" rx="3" fill="#ef4444" opacity="0.8"/>
+  <rect x="460" y="715" width="140" height="6" rx="3" fill="#22c55e" opacity="0.8"/>
+  <rect x="600" y="715" width="140" height="6" rx="3" fill="#3b82f6" opacity="0.8"/>
+  <rect x="740" y="715" width="140" height="6" rx="3" fill="#e4e4e7" opacity="0.8"/>
+
+  <text x="600" y="745" text-anchor="middle" fill="#f472b6" font-size="16" font-weight="bold">RUBAN LED RGBW 12V</text>
+  <text x="600" y="765" text-anchor="middle" fill="#64748b" font-size="12">Non-addressable - 5 fils</text>
+
+  <!-- 5 fils du ruban -->
+  <text x="380" y="800" text-anchor="middle" fill="#eab308" font-size="12" font-weight="bold">+12V</text>
+  <text x="460" y="800" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="bold">R</text>
+  <text x="540" y="800" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="bold">G</text>
+  <text x="620" y="800" text-anchor="middle" fill="#3b82f6" font-size="12" font-weight="bold">B</text>
+  <text x="700" y="800" text-anchor="middle" fill="#e4e4e7" font-size="12" font-weight="bold">W</text>
+
+  <!-- Fils OUT- -> Ruban -->
+  <line x1="460" y1="637" x2="460" y2="710" stroke="#ef4444" stroke-width="2" marker-end="url(#arrow-red)"/>
+  <line x1="540" y1="637" x2="540" y2="710" stroke="#22c55e" stroke-width="2" marker-end="url(#arrow-green)"/>
+  <line x1="620" y1="637" x2="620" y2="710" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <line x1="700" y1="637" x2="700" y2="710" stroke="#a1a1aa" stroke-width="2" marker-end="url(#arrow-white)"/>
+
+  <!-- +12V -> ruban -->
+  <line x1="530" y1="340" x2="380" y2="340" stroke="#ef4444" stroke-width="2" stroke-dasharray="6,3"/>
+  <line x1="380" y1="340" x2="380" y2="710" stroke="#ef4444" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arrow-red)"/>
+  <text x="368" y="530" text-anchor="end" fill="#ef4444" font-size="10" transform="rotate(-90,368,530)">+12V direct</text>
+
+  <!-- ==================== ESP32 ==================== -->
+  <rect x="100" y="880" width="280" height="200" rx="10" fill="#1e293b" stroke="#06b6d4" stroke-width="2" filter="url(#shadow)"/>
+  <text x="240" y="910" text-anchor="middle" fill="#06b6d4" font-size="16" font-weight="bold">ESP32-S</text>
+  <text x="240" y="930" text-anchor="middle" fill="#64748b" font-size="11">Alimente via USB</text>
+
+  <text x="140" y="960" fill="#06b6d4" font-size="12">D21 (SDA)</text>
+  <text x="140" y="985" fill="#06b6d4" font-size="12">D22 (SCL)</text>
+  <text x="140" y="1010" fill="#eab308" font-size="12">VIN (5V)</text>
+  <text x="140" y="1035" fill="#64748b" font-size="12">GND</text>
+
+  <!-- Dots for pins -->
+  <circle cx="350" cy="955" r="4" fill="#06b6d4"/>
+  <circle cx="350" cy="980" r="4" fill="#06b6d4"/>
+  <circle cx="350" cy="1005" r="4" fill="#eab308"/>
+  <circle cx="350" cy="1030" r="4" fill="#64748b"/>
+
+  <!-- ESP32 GND -> barre -->
+  <line x1="175" y1="1040" x2="175" y2="1060" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="175" y1="1060" x2="60" y2="1060" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="60" y1="1060" x2="60" y2="290" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="60" y1="290" x2="100" y2="290" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <circle cx="175" cy="310" r="3" fill="#64748b"/>
+
+  <!-- ==================== PCA9685 ==================== -->
+  <rect x="520" y="880" width="280" height="230" rx="10" fill="#1e293b" stroke="#a855f7" stroke-width="2" filter="url(#shadow)"/>
+  <text x="660" y="910" text-anchor="middle" fill="#a855f7" font-size="16" font-weight="bold">PCA9685</text>
+  <text x="660" y="930" text-anchor="middle" fill="#64748b" font-size="11">I2C PWM Driver (12-bit)</text>
+
+  <!-- Pins I2C -->
+  <text x="545" y="960" fill="#06b6d4" font-size="12">SDA</text>
+  <text x="545" y="985" fill="#06b6d4" font-size="12">SCL</text>
+  <text x="545" y="1010" fill="#eab308" font-size="12">VCC</text>
+  <text x="545" y="1035" fill="#64748b" font-size="12">GND</text>
+
+  <circle cx="535" cy="955" r="4" fill="#06b6d4"/>
+  <circle cx="535" cy="980" r="4" fill="#06b6d4"/>
+  <circle cx="535" cy="1005" r="4" fill="#eab308"/>
+  <circle cx="535" cy="1030" r="4" fill="#64748b"/>
+
+  <!-- Pins CH + GND pairs (right side) -->
+  <text x="730" y="955" fill="#ef4444" font-size="11" font-weight="bold">CH0 (R)</text>
+  <text x="730" y="972" fill="#64748b" font-size="10">GND</text>
+  <text x="730" y="993" fill="#22c55e" font-size="11" font-weight="bold">CH1 (G)</text>
+  <text x="730" y="1010" fill="#64748b" font-size="10">GND</text>
+  <text x="730" y="1031" fill="#3b82f6" font-size="11" font-weight="bold">CH2 (B)</text>
+  <text x="730" y="1048" fill="#64748b" font-size="10">GND</text>
+  <text x="730" y="1069" fill="#e4e4e7" font-size="11" font-weight="bold">CH3 (W)</text>
+  <text x="730" y="1086" fill="#64748b" font-size="10">GND</text>
+
+  <!-- CH dots -->
+  <circle cx="770" cy="950" r="4" fill="#ef4444"/>
+  <circle cx="770" cy="988" r="4" fill="#22c55e"/>
+  <circle cx="770" cy="1026" r="4" fill="#3b82f6"/>
+  <circle cx="770" cy="1064" r="4" fill="#a1a1aa"/>
+  <!-- GND dots -->
+  <circle cx="770" cy="967" r="3" fill="#64748b"/>
+  <circle cx="770" cy="1005" r="3" fill="#64748b"/>
+  <circle cx="770" cy="1043" r="3" fill="#64748b"/>
+  <circle cx="770" cy="1081" r="3" fill="#64748b"/>
+
+  <!-- Fils I2C : ESP32 -> PCA9685 -->
+  <line x1="350" y1="955" x2="535" y2="955" stroke="#06b6d4" stroke-width="2"/>
+  <text x="442" y="948" text-anchor="middle" fill="#06b6d4" font-size="9">SDA</text>
+  <line x1="350" y1="980" x2="535" y2="980" stroke="#06b6d4" stroke-width="2"/>
+  <text x="442" y="973" text-anchor="middle" fill="#06b6d4" font-size="9">SCL</text>
+
+  <!-- Fil 5V : ESP32 -> PCA9685 -->
+  <line x1="350" y1="1005" x2="535" y2="1005" stroke="#eab308" stroke-width="2"/>
+  <text x="442" y="998" text-anchor="middle" fill="#eab308" font-size="9">5V</text>
+
+  <!-- Fil GND : ESP32 -> PCA9685 -->
+  <line x1="350" y1="1030" x2="535" y2="1030" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+
+  <!-- PCA9685 GND -> barre -->
+  <line x1="535" y1="1030" x2="520" y2="1030" stroke="#64748b" stroke-width="1" stroke-dasharray="3,2"/>
+  <line x1="520" y1="1030" x2="520" y2="1060" stroke="#64748b" stroke-width="1" stroke-dasharray="3,2"/>
+  <line x1="520" y1="1060" x2="320" y2="1060" stroke="#64748b" stroke-width="1" stroke-dasharray="3,2"/>
+  <circle cx="320" cy="310" r="3" fill="#64748b"/>
+  <line x1="320" y1="310" x2="320" y2="1060" stroke="#64748b" stroke-width="1" stroke-dasharray="3,2" opacity="0.3"/>
+
+  <!-- Fils CH0-3 -> PWM1-4 module MOSFET -->
+  <!-- CH0 -> PWM1 -->
+  <line x1="770" y1="950" x2="850" y2="950" stroke="#ef4444" stroke-width="2"/>
+  <line x1="850" y1="950" x2="850" y2="483" stroke="#ef4444" stroke-width="2"/>
+  <line x1="850" y1="483" x2="595" y2="483" stroke="#ef4444" stroke-width="2" marker-end="url(#arrow-red)"/>
+
+  <!-- CH1 -> PWM2 -->
+  <line x1="770" y1="988" x2="870" y2="988" stroke="#22c55e" stroke-width="2"/>
+  <line x1="870" y1="988" x2="870" y2="511" stroke="#22c55e" stroke-width="2"/>
+  <line x1="870" y1="511" x2="595" y2="511" stroke="#22c55e" stroke-width="2" marker-end="url(#arrow-green)"/>
+
+  <!-- CH2 -> PWM3 -->
+  <line x1="770" y1="1026" x2="890" y2="1026" stroke="#3b82f6" stroke-width="2"/>
+  <line x1="890" y1="1026" x2="890" y2="539" stroke="#3b82f6" stroke-width="2"/>
+  <line x1="890" y1="539" x2="595" y2="539" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-blue)"/>
+
+  <!-- CH3 -> PWM4 -->
+  <line x1="770" y1="1064" x2="910" y2="1064" stroke="#a1a1aa" stroke-width="2"/>
+  <line x1="910" y1="1064" x2="910" y2="567" stroke="#a1a1aa" stroke-width="2"/>
+  <line x1="910" y1="567" x2="595" y2="567" stroke="#a1a1aa" stroke-width="2" marker-end="url(#arrow-white)"/>
+
+  <!-- Fils GND PCA9685 -> GND1-4 module MOSFET -->
+  <!-- PCA9685 GND0 -> GND1 -->
+  <line x1="770" y1="967" x2="840" y2="967" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="840" y1="967" x2="840" y2="487" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="840" y1="487" x2="650" y2="487" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+
+  <!-- PCA9685 GND1 -> GND2 -->
+  <line x1="770" y1="1005" x2="860" y2="1005" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="860" y1="1005" x2="860" y2="515" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="860" y1="515" x2="650" y2="515" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+
+  <!-- PCA9685 GND2 -> GND3 -->
+  <line x1="770" y1="1043" x2="880" y2="1043" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="880" y1="1043" x2="880" y2="543" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="880" y1="543" x2="650" y2="543" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+
+  <!-- PCA9685 GND3 -> GND4 -->
+  <line x1="770" y1="1081" x2="900" y2="1081" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="900" y1="1081" x2="900" y2="571" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="900" y1="571" x2="650" y2="571" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+
+  <!-- ==================== LEGENDE ==================== -->
+  <rect x="100" y="1160" width="1000" height="200" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+  <text x="600" y="1190" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="bold" letter-spacing="2">RECAPITULATIF DES CONNEXIONS</text>
+
+  <!-- Colonne 1 -->
+  <text x="150" y="1220" fill="#06b6d4" font-size="12" font-weight="bold">ESP32 -> PCA9685</text>
+  <text x="150" y="1242" fill="#94a3b8" font-size="11">D21 (SDA) -> SDA</text>
+  <text x="150" y="1260" fill="#94a3b8" font-size="11">D22 (SCL) -> SCL</text>
+  <text x="150" y="1278" fill="#94a3b8" font-size="11">VIN (5V)  -> VCC</text>
+  <text x="150" y="1296" fill="#94a3b8" font-size="11">GND       -> GND commune</text>
+
+  <!-- Colonne 2 -->
+  <text x="430" y="1220" fill="#a855f7" font-size="12" font-weight="bold">PCA9685 -> Module MOSFET</text>
+  <text x="430" y="1242" fill="#ef4444" font-size="11">CH0 + GND -> PWM1 + GND1 (Rouge)</text>
+  <text x="430" y="1260" fill="#22c55e" font-size="11">CH1 + GND -> PWM2 + GND2 (Vert)</text>
+  <text x="430" y="1278" fill="#3b82f6" font-size="11">CH2 + GND -> PWM3 + GND3 (Bleu)</text>
+  <text x="430" y="1296" fill="#e4e4e7" font-size="11">CH3 + GND -> PWM4 + GND4 (Blanc)</text>
+
+  <!-- Colonne 3 -->
+  <text x="750" y="1220" fill="#f472b6" font-size="12" font-weight="bold">Module MOSFET -> Ruban</text>
+  <text x="750" y="1242" fill="#ef4444" font-size="11">OUT-1 -> fil R</text>
+  <text x="750" y="1260" fill="#22c55e" font-size="11">OUT-2 -> fil G</text>
+  <text x="750" y="1278" fill="#3b82f6" font-size="11">OUT-3 -> fil B</text>
+  <text x="750" y="1296" fill="#e4e4e7" font-size="11">OUT-4 -> fil W</text>
+
+  <!-- Ligne alim -->
+  <line x1="130" y1="1310" x2="1070" y2="1310" stroke="#334155" stroke-width="1"/>
+  <text x="200" y="1330" fill="#eab308" font-size="11" font-weight="bold">Alim 12V (+)</text>
+  <text x="400" y="1330" fill="#94a3b8" font-size="11">-> DC+ module MOSFET + fil +12V ruban (direct)</text>
+  <text x="200" y="1348" fill="#64748b" font-size="11" font-weight="bold">Alim 12V (-)</text>
+  <text x="400" y="1348" fill="#94a3b8" font-size="11">-> DC- module + GND ESP32 + GND PCA9685</text>
+
+  <!-- ==================== WARNING ==================== -->
+  <rect x="200" y="1380" width="800" height="55" rx="8" fill="#3b1c1c" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="230" y="1400" fill="#fca5a5" font-size="13" font-weight="bold">!  GND COMMUNE OBLIGATOIRE</text>
+  <text x="230" y="1418" fill="#94a3b8" font-size="11">ESP32 + PCA9685 + DC- module + Alim 12V (-) = tous sur le meme rail GND</text>
+  <text x="230" y="1433" fill="#fbbf24" font-size="11" font-weight="bold">!  GND1-4 MOSFET -> 4 ports GND du PCA9685 (en paire avec CH0-CH3, pas sur la masse directe)</text>
+
+  <!-- ==================== FOOTER ==================== -->
+  <text x="600" y="1470" text-anchor="middle" fill="#475569" font-size="11">Sonic Lumina v2 — ESP32 + PCA9685 + MOSFETs + Ruban RGBW 12V — BLE Control</text>
+  <text x="600" y="1490" text-anchor="middle" fill="#334155" font-size="10">github.com/naime2909/Lumina</text>
+
+  <!-- ==================== LEGENDE COULEURS FILS ==================== -->
+  <rect x="100" y="1500" width="1000" height="50" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="140" y="1530" fill="#64748b" font-size="11" font-weight="bold">Fils :</text>
+  <line x1="195" y1="1527" x2="225" y2="1527" stroke="#ef4444" stroke-width="3"/><text x="233" y="1531" fill="#94a3b8" font-size="10">+12V / Rouge</text>
+  <line x1="345" y1="1527" x2="375" y2="1527" stroke="#22c55e" stroke-width="3"/><text x="383" y="1531" fill="#94a3b8" font-size="10">Vert</text>
+  <line x1="435" y1="1527" x2="465" y2="1527" stroke="#3b82f6" stroke-width="3"/><text x="473" y="1531" fill="#94a3b8" font-size="10">Bleu</text>
+  <line x1="525" y1="1527" x2="555" y2="1527" stroke="#a1a1aa" stroke-width="3"/><text x="563" y="1531" fill="#94a3b8" font-size="10">Blanc</text>
+  <line x1="625" y1="1527" x2="655" y2="1527" stroke="#06b6d4" stroke-width="3"/><text x="663" y="1531" fill="#94a3b8" font-size="10">I2C (SDA/SCL)</text>
+  <line x1="790" y1="1527" x2="820" y2="1527" stroke="#eab308" stroke-width="3"/><text x="828" y="1531" fill="#94a3b8" font-size="10">5V</text>
+  <line x1="870" y1="1527" x2="900" y2="1527" stroke="#64748b" stroke-width="3" stroke-dasharray="4,2"/><text x="908" y="1531" fill="#94a3b8" font-size="10">GND</text>
+</svg>
